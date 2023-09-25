@@ -1,0 +1,30 @@
+<div id="reviewsList">
+
+    {% if reviews %}
+
+        {% for review in reviews %}
+
+            <div class="review">
+                
+                <div class="info">
+                
+                    <div class="author">{{ review.review.author }}</div>
+
+                    <div class="date">{{ review.review.date_added }}</div>
+
+                    <div class="text">{{ review.review.text }}</div>
+                
+                </div>
+
+                <a href="{{ review.product.href }}" class="product">
+                    <img src="{{ review.product.thumb }}" alt="{{ review.product.name }}" class="image">
+                    {{ review.product.name }}
+                </a>
+
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+</div>

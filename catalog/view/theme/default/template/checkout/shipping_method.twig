@@ -1,0 +1,481 @@
+{% if error_warning %}
+<div class="alert alert-warning alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}</div>
+{% endif %}
+{% if shipping_methods %}
+<p>{{ text_shipping_method }}</p>
+{% for shipping_method in shipping_methods %}
+<p><strong>{{ shipping_method.title }}</strong></p>
+{% if not shipping_method.error %}
+{% for quote in shipping_method.quote %}
+<div class="radio">
+  <label> {% if quote.code == code or not code %}
+    {% set code = quote.code %}
+    <input type="radio" name="shipping_method" value="{{ quote.code }}" checked="checked" />
+    {% else %}
+    <input type="radio" name="shipping_method" value="{{ quote.code }}" />
+    {% endif %}
+    {{ quote.title }} - {{ quote.text }}</label>
+</div>
+{% endfor %}
+{% else %}
+<div class="alert alert-danger alert-dismissible">{{ shipping_method.error }}</div>
+{% endif %}
+{% endfor %}
+{% endif %}
+
+
+
+{# trofimenk0 #}
+{% if novaposhtaExists %}
+
+  <form action="" id="formNovaposhta" method="post" enctype="multipart/form-data" style="display:none;">
+
+    <div class="novaposhtaInstructions">
+      Почерзі оберіть область, населений пункт й відділення нової пошти для доставки.
+    </div>
+
+    <a href="javascript:void(0)" class="novaposhtaSelect">
+      <span class="labelText">Область</span>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M7.41 8.58997L12 13.17L16.59 8.58997L18 9.99997L12 16L6 9.99997L7.41 8.58997Z" fill="#323232"/>
+      </svg>
+      <div class="livesearch" style="display:none;">
+        <input type="text" name="novaposhtaArea" value="" id="novaposhtaArea" class="input-text">
+      </div>
+    </a>
+  
+    <a href="javascript:void(0)" class="novaposhtaSelect">
+      <span class="labelText">Населений пункт</span>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M7.41 8.58997L12 13.17L16.59 8.58997L18 9.99997L12 16L6 9.99997L7.41 8.58997Z" fill="#323232"/>
+      </svg>
+      <div class="livesearch" style="display:none;">
+        <input type="text" name="novaposhtaCity" value="" id="novaposhtaCity" class="input-text">
+      </div>
+    </a>
+
+    <a href="javascript:void(0)" class="novaposhtaSelect">
+      <span class="labelText">№ Відділення</span>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M7.41 8.58997L12 13.17L16.59 8.58997L18 9.99997L12 16L6 9.99997L7.41 8.58997Z" fill="#323232"/>
+      </svg>
+      <div class="livesearch" style="display:none;">
+        <input type="text" name="novaposhtaOffice" value="" id="novaposhtaOffice" class="input-text">
+      </div>
+    </a>
+
+  </form>
+
+
+  <script>
+
+  $(document).on('click', '#collapse-shipping-method input[type="radio"][name="shipping_method"]', function() {
+    if($(this).val() == 'novaposhta.novaposhta') {
+      $('#formNovaposhta').slideDown({
+        start: function () {
+          $(this).css({
+            display: "flex"
+          })
+        }
+      });
+    } else {
+      $('#formNovaposhta').slideUp();
+    }
+  });
+
+
+  // START Nova Poshta 
+
+  let areaRef = '';
+  let cityRef = '';
+
+  let requestUrl = 'index.php?route=extension/shipping/novaposhta/novaposhtaApiRequest';
+
+  // Areas
+  $('.novaposhtaSelect').on('click', function(event){
+    event.preventDefault();
+
+    if($(this).find('input').attr('id') == 'novaposhtaCity' && !$('#novaposhtaArea').val()) {
+      $('#novaposhtaArea').parents('.novaposhtaSelect').css('border-color', '#f00')
+      return true;
+    }
+
+    if($(this).find('input').attr('id') == 'novaposhtaOffice' && !$('#novaposhtaCity').val()) {
+      $('#novaposhtaCity').parents('.novaposhtaSelect').css('border-color', '#f00')
+      return true;
+    }
+
+    if(!$(event.target).parent().hasClass('novaposhtaSelect') && !$(event.target).hasClass('novaposhtaSelect')) {
+      return;
+    }
+
+    $(this).toggleClass('active');
+
+    if($(this).hasClass('active')) {
+      let requestData = {};
+
+      switch($(this).find('input').attr('id')) {
+        case 'novaposhtaArea': requestData['type'] = 'area';;
+          break;
+        case 'novaposhtaCity': requestData['value'] = 'А'; requestData['type'] = 'city';
+          break;
+        case 'novaposhtaOffice': requestData['type'] = 'office'; requestData['cityRef'] = cityRef;
+          break;
+      }
+
+      novaposhtaSearch(requestData)
+
+      $(this).find('.livesearch').slideDown();
+    } else {
+      $(this).find('.livesearch').slideUp();
+    }
+    
+  });
+
+  $('#formNovaposhta input').on('input', function() {
+    let requestData = {};
+
+    requestData['value'] = $(this).val();
+
+    switch($(this).attr('id')) {
+      case 'novaposhtaArea': requestData['type'] = 'area';
+        break;
+      case 'novaposhtaCity': requestData['type'] = 'city';
+        break;
+      case 'novaposhtaOffice': requestData['type'] = 'office'; requestData['cityRef'] = cityRef;
+        break;
+    }
+
+    novaposhtaSearch(requestData);
+
+  });
+
+  function novaposhtaSearch(requestData) {
+
+    $.ajax({
+      url: requestUrl,
+      type: 'post',
+      data: requestData,
+      dataType: 'json',
+      success: function(json) {
+        let result = $.parseJSON(json.response);
+
+        switch(requestData['type']) {
+          case 'area': 
+            let areas = result['data'];
+            $('#novaposhtaArea').parent('.livesearch').find('.livesearchItem').remove();
+
+            if(requestData['value']) {
+              $.each(areas, function( index, area ) {
+                if(area['Description'].includes(requestData['value']) || area['DescriptionRu'].includes(requestData['value'])){
+                  $('#novaposhtaArea').parent('.livesearch').append('<div class="livesearchItem" data-ref="' + area['Ref'] + '">' + area['Description'] + '</div>');
+                }
+              });
+            } else {
+              $.each(areas, function( index, area ) {
+                $('#novaposhtaArea').parent('.livesearch').append('<div class="livesearchItem" data-ref="' + area['Ref'] + '">' + area['Description'] + '</div>');
+              });
+            }
+            break;
+
+          case 'city':
+            let cities = result['data']['0']['Addresses'];
+            $('#novaposhtaCity').parent('.livesearch').find('.livesearchItem').remove();
+            
+            $.each(cities, function( index, city ) {
+              if(city['Area'] == $('#novaposhtaArea').val()){
+                $('#novaposhtaCity').parent('.livesearch').append('<div class="livesearchItem" data-ref="' + city['Ref'] + '">' + city['Present'] + '</div>');
+              }
+            });
+            break;
+
+          case 'office': 
+            let offices = result['data'];
+            $.each(offices, function( index, office ) {
+              $('#novaposhtaOffice').parent('.livesearch').append('<div class="livesearchItem" data-ref="' + office['Ref'] + '">' + office['Description'] + '</div>');
+            });
+            break;
+        } 
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+      }
+    });
+
+  }
+
+
+  $(document).on('click', '#novaposhtaArea ~ .livesearchItem', function() {
+    areaRef = $(this).data('ref');
+    $(this).parents('.livesearch').find('input').val($(this).text());
+    $(this).parents('.novaposhtaSelect').removeClass('active').css('border-color', '#1fc0a0').find('.labelText').html($(this).text());
+    
+    $('#novaposhtaCity').val('');
+    $('#novaposhtaOffice').val('');
+
+    $('#novaposhtaCity').parents('.novaposhtaSelect').css('border-color', '#eee');
+    $('#novaposhtaOffice').parents('.novaposhtaSelect').css('border-color', '#eee');
+
+    $('#novaposhtaCity').parents('.novaposhtaSelect').find('.labelText').html('Населений пункт');
+    $('#novaposhtaOffice').parents('.novaposhtaSelect').find('.labelText').html('№ Відділення');
+
+    $(this).parents('.livesearch').slideUp().find('.livesearchItem').remove();
+  });
+
+  $(document).on('click', '#novaposhtaCity ~ .livesearchItem', function() {
+    cityRef = $(this).data('ref');
+    $(this).parents('.livesearch').find('input').val($(this).text());
+    $(this).parents('.novaposhtaSelect').removeClass('active').css('border-color', '#1fc0a0').find('.labelText').html($(this).text());
+    
+    $('#novaposhtaOffice').val('');
+    $('#novaposhtaOffice').parents('.novaposhtaSelect').css('border-color', '#eee');
+    $('#novaposhtaOffice').parents('.novaposhtaSelect').find('.labelText').html('№ Відділення');
+
+    $(this).parents('.livesearch').slideUp().find('.livesearchItem').remove();
+  });
+
+  $(document).on('click', '#novaposhtaOffice ~ .livesearchItem', function() {
+    cityRef = $(this).data('ref');
+    $(this).parents('.livesearch').find('input').val($(this).text());
+    $(this).parents('.novaposhtaSelect').removeClass('active').css('border-color', '#1fc0a0').find('.labelText').html($(this).text());
+    
+    $(this).parents('.livesearch').slideUp().find('.livesearchItem').remove();
+  });
+  
+  </script>
+
+{% endif %}
+{# trofimenk0 #}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{# trofimenk0 #}
+{% if ukrposhtaExists %}
+
+  <form action="" id="formUkrposhta" method="post" enctype="multipart/form-data" style="display:none;">
+
+    <div class="ukrposhtaInstructions">
+      Почерзі оберіть населений пункт й відділення Укрпошти для доставки.
+    </div>
+  
+    <a href="javascript:void(0)" class="ukrposhtaSelect">
+      <span class="labelText">Населений пункт</span>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M7.41 8.58997L12 13.17L16.59 8.58997L18 9.99997L12 16L6 9.99997L7.41 8.58997Z" fill="#323232"/>
+      </svg>
+      <div class="livesearch" style="display:none;">
+        <input type="text" name="ukrposhtaCity" value="" id="ukrposhtaCity" class="input-text">
+      </div>
+    </a>
+
+    <a href="javascript:void(0)" class="ukrposhtaSelect">
+      <span class="labelText">Відділення</span>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M7.41 8.58997L12 13.17L16.59 8.58997L18 9.99997L12 16L6 9.99997L7.41 8.58997Z" fill="#323232"/>
+      </svg>
+      <div class="livesearch" style="display:none;">
+        <input type="text" name="ukrposhtaOffice" value="" id="ukrposhtaOffice" class="input-text">
+      </div>
+    </a>
+
+  </form>
+
+
+  <script>
+
+    let ukrposhtaOffices = [];
+
+    $(document).on(
+      "click",
+      '#collapse-shipping-method input[type="radio"][name="shipping_method"]',
+      function() {
+        if ($(this).val() == "ukrposhta.ukrposhta") {
+          $("#formUkrposhta").slideDown({
+            start: function() {
+              $(this).css({
+                display: "flex",
+              });
+            },
+          });
+        } else {
+          $("#formUkrposhta").slideUp();
+        }
+      }
+    );
+
+    // START Ukrposhta
+
+    $(".ukrposhtaSelect").on("click", function(event) {
+      event.preventDefault();
+
+      if (
+        !$(event.target).parent().hasClass("ukrposhtaSelect") &&
+        !$(event.target).hasClass("ukrposhtaSelect")
+      ) {
+        return;
+      }
+
+      $(this).toggleClass("active");
+
+      if ($(this).hasClass("active")) {
+        $(this).find(".livesearch").slideDown();
+      } else {
+        $(this).find(".livesearch").slideUp();
+      }
+    });
+
+    $("#ukrposhtaCity").on("input", function() {
+      if ($(this).val().length > 1) {
+        $cityNameUrl =
+          "https://offices.ukrposhta.ua/requests/controller.php?method=get_city_by_region_id_and_district_id_and_city_ua&city_ua=" +
+          $(this).val();
+
+        $.ajax({
+          url: $cityNameUrl,
+        }).done(function(data) {
+          $("#ukrposhtaCity")
+            .parent(".livesearch")
+            .find(".livesearchItem")
+            .remove();
+          if ("error" in data) {
+            $("#ukrposhtaCity")
+              .parent(".livesearch")
+              .append('<div class="livesearchItem">Немає співпадінь.</div>');
+          } else {
+            if (data.length > 10) {
+              for (let i = 0; i < 10; i++) {
+                let name = '';
+
+                if(data[i]["CITYTYPE_UA"] == "Село") {
+                  name += 'c. ' + data[i]["CITY_UA"] + ', ' + data[i]["DISTRICT_UA"] + ' р-н, ' + data[i]["REGION_UA"] + ' обл.';
+                } else if (data[i]["CITYTYPE_UA"] == "Селище") {
+                  name += 'c-ще ' + data[i]["CITY_UA"] + ', ' + data[i]["DISTRICT_UA"] + ' р-н, ' + data[i]["REGION_UA"] + ' обл.';
+                } else if (data[i]["CITYTYPE_UA"] == "Місто") {
+                  name += 'м. ' + data[i]["CITY_UA"];
+                }
+
+                $("#ukrposhtaCity")
+                  .parent(".livesearch").append(
+                    '<div class="livesearchItem" data-cityid ="' + data[i]["CITY_ID"] + '">' + name + "</div>"
+                  );
+              }
+            } else {
+              data.forEach(function(item) {
+                let name = '';
+
+                if(item["CITYTYPE_UA"] == "Село") {
+                  name += 'c. ' + item["CITY_UA"] + ', ' + item["DISTRICT_UA"] + ' р-н, ' + item["REGION_UA"] + ' обл.';
+                } else if (item["CITYTYPE_UA"] == "Селище") {
+                  name += 'c-ще ' + item["CITY_UA"] + ', ' + item["DISTRICT_UA"] + ' р-н, ' + item["REGION_UA"] + ' обл.';
+                } else if (item["CITYTYPE_UA"] == "Місто") {
+                  name += 'м. ' + item["CITY_UA"];
+                }
+
+                $("#ukrposhtaCity")
+                  .parent(".livesearch").append(
+                    '<div class="livesearchItem" data-cityid ="' + item["CITY_ID"] + '">' + name + "</div>"
+                  );
+              });
+            }
+          }
+        });
+      }
+    });
+
+    $(document).on("click", "#ukrposhtaCity ~ .livesearchItem", function() {
+
+      ukrposhtaOffices = [];
+      let ukrposhtaOfficesByCityUrl = 'https://www.ukrposhta.ua/address-classifier/get_postoffices_postdistricts_web?pdCityId=' + $(this).data('cityid');
+
+      $.ajax({
+        url: ukrposhtaOfficesByCityUrl
+      }).done(function (data) {
+        $('#ukrposhtaOffice').parent('.livesearch').find('.livesearchItem').remove();
+
+        $(data).find('Entry').each(function() {
+          let postoffice = {'name': $(this).find('PO_LONG').text(), 'postindex': $(this).find('POSTINDEX').text()};
+          ukrposhtaOffices.push(postoffice);
+          $('#ukrposhtaOffice').parent('.livesearch').append('<div class="livesearchItem" data-postindex=' + postoffice['postindex'] + '>' + postoffice['name'] + ' (індекс: ' + postoffice['postindex'] + ')' + '</div>');
+        });
+      });
+
+      $(this).parents(".livesearch").find("input").val($(this).text());
+
+      $(this)
+        .parents(".ukrposhtaSelect")
+        .removeClass("active")
+        .css("border-color", "#1fc0a0")
+        .find(".labelText")
+        .html($(this).text());
+
+      $(this).parents(".livesearch").slideUp().find(".livesearchItem").remove();
+    });
+
+
+    $("#ukrposhtaOffice").on("input", function() {
+      let searchVal = $(this).val();
+      let searchResult = [];
+
+      ukrposhtaOffices.forEach(item => {
+        if(item.name.includes(searchVal)) {
+          searchResult.push(item);
+        }
+      });
+
+      $(this).parents(".livesearch").find(".livesearchItem").remove();
+
+      searchResult.forEach(item => {
+        $(this).parent('.livesearch').append('<div class="livesearchItem" data-postindex=' + item['postindex'] + '>' + item['name'] + ' (індекс: ' + item['postindex'] + ')' +  '</div>');
+      });
+
+    });
+
+    $(document).on("click", "#ukrposhtaOffice ~ .livesearchItem", function() {
+      $(this).parents(".livesearch").find("input").val($(this).text());
+
+      $(this)
+        .parents(".ukrposhtaSelect")
+        .removeClass("active")
+        .css("border-color", "#1fc0a0")
+        .find(".labelText")
+        .html($(this).text());
+
+      $(this).parents(".livesearch").slideUp().find(".livesearchItem").remove();
+    });
+  
+  </script>
+
+{% endif %}
+{# trofimenk0 #}
+
+
+<p><strong>{{ text_comments }}</strong></p>
+<p>
+  <textarea name="comment" rows="8" class="form-control">{{ comment }}</textarea>
+</p>
+<div class="buttons">
+  <div class="pull-right">
+    <input type="button" value="{{ button_continue }}" id="button-shipping-method" data-loading-text="{{ text_loading }}" class="btn btn-primary" />
+  </div>
+</div>

@@ -1,0 +1,45 @@
+<div class="container">
+	<h3 class="heading">Gallery</h3>
+	<div class="row">
+		 <div id="gallery" class="owl-carousel owl-theme">
+			{% for banner in banners %}
+				<div class="col-sm-12 offerbanner">
+				<div class="">
+				  {% if banner.link %}
+				  	<a href="{{ banner.link }}">
+				  		<img src="{{ banner.image }}" alt="{{ banner.title }}" class="img-responsive" />
+				  	</a>
+				  {% else %}
+				  	<img src="{{ banner.image }}" alt="{{ banner.title }}" class="img-responsive" />
+				  {% endif %}
+				    <p class="inspire_offer_hover">
+                        <a class="bannerzoomicon" title="Click to view Full Image " href="{{ banner.image }}" data-lightbox="example-set"></a>
+                    </p>
+				  
+				</div>
+		    </div>
+			  {% endfor %}
+		</div>
+	</div>
+</div>
+
+<script >
+    $(document).ready(function() {
+    $("#gallery").owlCarousel({
+    itemsCustom : [
+    [0, 1],
+    [320, 2],
+    [412, 2],
+    [600, 3],
+    [768, 4],
+    [992, 4],
+    [1200, 5]
+    ],
+      autoPlay: true,
+      loop: true,
+      navigationText: ['<i class="fa fa-angle-left" aria-hidden="true"></i>', '<i class="fa fa-angle-right" aria-hidden="true"></i>'],
+      navigation : false,
+      pagination:false
+    });
+    });
+</script>

@@ -1,0 +1,183 @@
+    <div class="categoriesTabs">
+        <div class="container pro-bg">
+
+            <h2 class="heading text-center">
+                {{ heading_title }}
+            </h2>
+
+            <ul class="nav nav-tabs pro-tab text-center">
+                {% if categories %}
+                    {% for category in categories %}
+
+                        <li class="tabl {% if loop.first %} active {% endif %}">
+                            <a href="#category{{ category.category_id }}Tab" data-toggle="tab">{{ category.name }}
+                            </a>
+                        </li>
+
+                    {% endfor %}
+                {% endif %}
+            </ul>
+
+            <div class="tab-content pro-nepr">
+                {% if categories %}
+                    {% for category in categories %}
+
+                        <div class="tab-pane {% if loop.first %} active {% endif %}" id="category{{ category.category_id }}Tab">
+
+                            {% set temp = 0 %}
+                            
+                            <div id="category{{ category.category_id }}" class="owl-theme owl-carousel">
+
+                                {% if category.products %}
+                                    {% for product in category.products %}
+
+                                        {% set temp = temp + 1 %}
+
+                                        {% if temp == 1 %}
+                                            <div class="multi-row">
+                                        {% endif %}
+
+                                        
+                                            <div class="product-layout col-xs-12">
+                                                <div class="product-thumb transition">
+                                                    <div class="image">
+
+                                                        <a href="{{ product.href }}">
+                                                            <img src="{{ product.thumb }}" alt="{{ product.name }}" title="{{ product.name }}" class="img-responsive center-block" />
+                                                        </a>
+
+                                                        <!-- insp Images Start -->
+                                                        {% set t = 0 %}
+                                                        {% for more_image in product.more_images %}
+                                                            {% for pop in more_image %}
+                                                                {% if t == 0 %}
+
+                                                                    <a href="{{ product.href }}">
+                                                                        <img src="{{ pop.popup_more }}" class="img-responsive second-img" alt="hover image"/>
+                                                                    </a>
+
+                                                                    {% set t = t + 1 %}
+
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        {% endfor %}
+
+                                                        <!-- End -->
+                                                        {% if product.price %}
+                                                            {% if product.special %}
+                                                            <span class="salepro">
+                                                                {{ text_sale }}
+                                                            </span>
+                                                            {% endif %}
+                                                        {% endif %}
+
+                                                    </div>
+
+                                                    <div class="caption text-center">
+                                                        <h4>
+                                                            <a href="{{ product.href }}">
+                                                                {{ product.name }}
+                                                            </a>
+                                                        </h4>
+
+                                                        <div class="sku">
+                                                            Артикул: {{ product.sku }}
+                                                        </div>
+
+                                                        {% if product.discounts %}
+
+                                                            {% for discount in product.discounts %}
+                                                                <div class="discount">
+                                                                    <span class="discountPrice">
+                                                                        {{ discount.price }}
+                                                                    </span>
+                                                                    <span class="discountQuantity">
+                                                                        {{ discount.quantity }}
+                                                                    </span>
+                                                                </div>
+                                                            {% endfor %}
+
+                                                        {% endif %}
+
+                                                        {% if product.price %}
+                                                            <p class="price">
+                                                                {% if not product.special %}
+                                                                    {{ product.price }}
+                                                                {% else %}
+                                                                    <span class="price-new">
+                                                                        {{ product.special }}
+                                                                    </span>
+                                                                    
+                                                                    <span class="price-old">
+                                                                        {{ product.price }}
+                                                                    </span>
+                                                                {% endif %}
+                                                            </p>
+                                                        {% endif %}
+
+                                                        <div class="button-group">
+                                                            <button class="acart" data-toggle="tooltip" title="{{ button_cart }}" type="button" onclick="cart.add('{{ product.product_id }}');">
+                                                                <svg width="16px" height="16px">
+                                                                <use xlink:href="#addcart"></use>
+                                                                </svg>
+                                                            </button>
+
+                                                            <div class="bquickv" data-toggle="tooltip" title="{{ button_quick }}"></div>
+                                                        </div>
+
+                                                    </div>
+                                                
+                                                </div>
+                                            </div>
+
+                                        {% if temp == 2 or loop.last %}
+                                            {% set temp = 0 %}
+                                            </div>
+                                        {% endif %}
+                                        
+
+                                    {% endfor %}
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+
+
+
+        </div>
+    </div>
+</div>
+
+{% if categories %}
+    {% for category in categories %}
+
+        <script >
+            $(document).ready(function() {
+                $("#category{{ category.category_id }}").owlCarousel({
+                    itemsCustom: [
+                        [0, 1],
+                        [375, 2],
+                        [600, 3],
+                        [768, 3],
+                        [992, 4],
+                        [1200, 4]
+                    ],
+                    autoPlay: 3000,
+                    navigationText: ['<i class="fa fa-angle-left" aria-hidden="true"></i>', '<i class="fa fa-angle-right" aria-hidden="true"></i>'],
+                    navigation : true,
+                    pagination:false
+                });
+            });
+        </script>
+
+    {% endfor %}
+{% endif %}
+
+
+

@@ -1,0 +1,434 @@
+<div class="hidden-xs">
+	{% if menuLinks %}
+		<div class="">
+			<nav id="menu" class="navbar">
+				<div class="navbar-header">
+					<span id="category" class="visible-xs">{{ text_category }}</span>
+					<button type="button" class="btn btn-navbar navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+						<i class="fa fa-bars"></i>
+					</button>
+				</div>
+				<div class="collapse navbar-collapse navbar-ex1-collapse">
+					<ul class="nav navbar-nav">
+
+						{% if ( menuLinks.home ) %}
+							<li>
+								<a href="{{ menuLinks.home.link }}">{{ homeTitle }}</a>
+							</li>
+						{% endif %}
+						
+						
+
+						{% if(menuLinks.catalog) %}
+							
+							<li class="dropdown">
+								<a href="javascript:void(0);" class="dropdown-toggle header-menu" data-toggle="dropdown">{{ menuLinks.catalog.title }}<i class="fa fa-angle-down pull-right enangle"></i>
+								</a>
+								<div class="dropdown-menu">
+									<div class="dropdown-inner">
+
+									 {% for category in categories %}
+										{% if category %}
+
+											
+											{% if category.children %}
+												<div class="dropdown-subinner">
+													<a href="{{ category.href }}">
+														{{ category.name }}
+														<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+															<path d="M8.59009 16.59L13.1701 12L8.59009 7.41L10.0001 6L16.0001 12L10.0001 18L8.59009 16.59Z" fill="#323232"/>
+														</svg>
+													</a>
+													{% for children in category.children|batch(category.children|length / category.column|round(1, 'ceil')) %}
+														<ul class="list-unstyled">
+															{% for child in children %}
+																<li class="dropdown-submenu">
+																	<a href="{{ child.href }}">
+																		{{ child.name }}
+																	</a>
+																	{% if child.grand_childs %}
+																		<ul class="list-unstyled grand-child">
+																			{% for grand_child in child.grand_childs %}
+																				<li>
+																					<a href="{{ grand_child.href }}">
+																						{{grand_child.name}}
+																					</a>
+																				</li>
+																			{% endfor %}
+																		</ul>
+																	{% endif %}
+																</li>
+															{% endfor %}
+														</ul>
+													{% endfor %}
+												</div>
+
+											{% else %}
+
+												<a href="{{ category.href }}">{{ category.name }}</a>
+
+											{% endif %}
+
+									 	{% endif %}
+									 {% endfor %}
+										
+									</div>
+									<a href="{{ category.href }}" class="see-all hidden-lg hidden-md hidden-sm">{{ text_all }}
+										{{ category.name }}</a>
+								</div>
+							</li>
+
+						{% endif %}
+
+
+						{% if(menuLinks.about) %}
+							<li>
+								<a href="{{ menuLinks.about.link }}">{{ menuLinks.about.title }}</a>
+							</li>
+						{% endif %}
+
+						{% if(menuLinks.partners) %}
+							<li>
+								<a href="{{ menuLinks.partners.link }}">{{ menuLinks.partners.title }}</a>
+							</li>
+						{% endif %}
+
+						{% if(menuLinks.reviews) %}
+							<li>
+								<a href="{{ menuLinks.reviews.link }}">{{ menuLinks.reviews.title }}</a>
+							</li>
+						{% endif %}
+
+						{% if(menuLinks.contact) %}
+							<li>
+								<a href="{{ menuLinks.contact.link }}">{{ text_contact}}</a>
+							</li>
+						{% endif %}
+					</ul>
+				</div>
+			</nav>
+		</div>
+	{% endif %}
+</div>
+
+<div class="hidden-md hidden-lg hidden-sm">
+	{% if menuLinks %}
+		<nav id="menu" class="navbar">
+
+			<div class="navbar-header">
+				<!-- <span id="category" class="visible-xs">{{ text_category }}</span> -->
+				<button type="button" class="btn btn-navbar" onclick="openNav()" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+					<i class="fa fa-bars"></i>
+				</button>
+			</div>
+
+			<div id="mySidenav" class="sidenav">
+				<div class="close-nav">
+					<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">
+						<i class="fa fa-close"></i>
+					</a>
+				</div>
+				<div class="collapse navbar-collapse navbar-ex1-collapse">
+					<ul class="nav navbar-nav">
+						{% if(menuLinks.home) %}
+							<li>
+								<a href="{{ menuLinks.home.link }}">{{ homeTitle }}</a>
+							</li>
+						{% endif %}
+
+						{% if(menuLinks.catalog) %}
+							
+							<li class="dropdown">
+								<a href="javascript:void(0);" class="dropdown-toggle header-menu" data-toggle="dropdown">{{ menuLinks.catalog.title }}<i class="fa fa-angle-down pull-right enangle"></i>
+								</a>
+								<div class="dropdown-menu">
+									<div class="dropdown-inner">
+
+									 {% for category in categories %}
+										{% if category %}
+
+											
+											{% if category.children %}
+												<div class="dropdown-subinner">
+													<a href="{{ category.href }}">
+														{{ category.name }}
+														<i class="fa fa-angle-down pull-right enangle"></i>
+													</a>
+													{% for children in category.children|batch(category.children|length / category.column|round(1, 'ceil')) %}
+														<ul class="list-unstyled">
+															{% for child in children %}
+																<li class="dropdown-submenu">
+																	<a href="{{ child.href }}">
+																		{{ child.name }}
+																	</a>
+																	{% if child.grand_childs %}
+																		<ul class="list-unstyled grand-child">
+																			{% for grand_child in child.grand_childs %}
+																				<li>
+																					<a href="{{ grand_child.href }}">
+																						{{grand_child.name}}
+																					</a>
+																				</li>
+																			{% endfor %}
+																		</ul>
+																	{% endif %}
+																</li>
+															{% endfor %}
+														</ul>
+													{% endfor %}
+												</div>
+
+											{% else %}
+
+												<a href="{{ category.href }}">{{ category.name }}</a>
+
+											{% endif %}
+
+									 	{% endif %}
+									 {% endfor %}
+										
+									</div>
+									<a href="{{ category.href }}" class="see-all hidden-lg hidden-md hidden-sm">{{ text_all }}
+										{{ category.name }}</a>
+								</div>
+							</li>
+
+						{% endif %}
+
+
+						{% if(menuLinks.about) %}
+							<li>
+								<a href="{{ menuLinks.about.link }}">{{ menuLinks.about.title }}</a>
+							</li>
+						{% endif %}
+
+						{% if(menuLinks.partners) %}
+							<li>
+								<a href="{{ menuLinks.partners.link }}">{{ menuLinks.partners.title }}</a>
+							</li>
+						{% endif %}
+
+						{% if(menuLinks.reviews) %}
+							<li>
+								<a href="{{ menuLinks.reviews.link }}">{{ menuLinks.reviews.title }}</a>
+							</li>
+						{% endif %}
+
+						{% if(menuLinks.contact) %}
+							<li>
+								<a href="{{ menuLinks.contact.link }}">{{ text_contact}}</a>
+							</li>
+						{% endif %}
+					</ul>
+				</div>
+
+				{% if language %}
+					{{ language }}
+				{% endif %}
+
+				{% if open %}
+					<div class="worktime">
+						{{ open }}
+					</div>
+				{% endif %}
+
+				<div class="hcall">
+					<a href="tel:{{ telephone }}">
+						<svg width="20px" height="24px"><use xlink:href="#hcall"></use></svg>
+						<span>{{ telephone }}</span>
+					</a>
+				</div>
+			</div>
+		</nav>
+
+	{% endif %}
+</div>
+
+<script >
+	function headermenu() {
+if (jQuery(window).width() < 992) {
+jQuery('ul.nav li.dropdown a.header-menu').attr("data-toggle", "dropdown");
+} else {
+jQuery('ul.nav li.dropdown a.header-menu').attr("data-toggle", "");
+}
+}
+$(document).ready(function () {
+headermenu();
+});
+jQuery(window).resize(function () {
+headermenu();
+});
+jQuery(window).scroll(function () {
+headermenu();
+});
+</script>
+
+
+
+
+
+
+{# ============================================================ DEFAULT CODE ============================================================ #}
+
+{# trofimenk0 #}
+
+{# 
+<div class="hidden-xs">
+	{% if categories %}
+		<div class="">
+			<nav id="menu" class="navbar">
+				<div class="navbar-header">
+					<span id="category" class="visible-xs">{{ text_category }}</span>
+					<button type="button" class="btn btn-navbar navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+						<i class="fa fa-bars"></i>
+					</button>
+				</div>
+				<div class="collapse navbar-collapse navbar-ex1-collapse">
+					<ul class="nav navbar-nav">
+						{% for category in categories %}
+							{% if category.children %}
+								<li class="dropdown">
+									<a href="{{ category.href }}" class="dropdown-toggle header-menu" data-toggle="dropdown">{{ category.name }}<i class="fa fa-angle-down pull-right enangle"></i>
+									</a>
+									<div class="dropdown-menu">
+										<div class="dropdown-inner">
+											{% for children in category.children|batch(category.children|length / category.column|round(1, 'ceil')) %}
+												<ul class="list-unstyled">
+													{% for child in children %}
+														<li class="dropdown-submenu">
+															<a href="{{ child.href }}" class="submenu-title">
+																{{ child.name }}
+															</a>
+															{% if child.grand_childs %}
+																<ul class="list-unstyled grand-child">
+																	{% for grand_child in child.grand_childs %}
+																		<li>
+																			<a href="{{ grand_child.href }}">
+																				{{grand_child.name}}
+																			</a>
+																		</li>
+																	{% endfor %}
+																</ul>
+															{% endif %}
+														</li>
+													{% endfor %}
+												</ul>
+											{% endfor %}
+										</div>
+										<a href="{{ category.href }}" class="see-all hidden-lg hidden-md hidden-sm">{{ text_all }}
+											{{ category.name }}</a>
+									</div>
+								</li>
+							{% else %}
+								<li>
+									<a href="{{ category.href }}">{{ category.name }}</a>
+								</li>
+							{% endif %}
+						{% endfor %}
+					</ul>
+				</div>
+			</nav>
+		</div>
+	{% endif %}
+</div>
+
+<div class="hidden-md hidden-lg hidden-sm">
+	{% if categories %}
+		<nav id="menu" class="navbar">
+
+			<div
+				class="navbar-header">
+				<!-- <span id="category" class="visible-xs">{{ text_category }}</span> -->
+				<button type="button" class="btn btn-navbar" onclick="openNav()" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+					<i class="fa fa-bars"></i>
+				</button>
+			</div>
+
+			<div id="mySidenav" class="sidenav">
+				<div class="close-nav">
+					<span class="categories">Category</span>
+					<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">
+						<i class="fa fa-close"></i>
+					</a>
+				</div>
+				<div class="collapse navbar-collapse navbar-ex1-collapse">
+					<ul class="nav navbar-nav">
+						{% for category in categories %}
+							{% if category.children %}
+								<li class="dropdown">
+									<a href="{{ category.href }}" class="dropdown-toggle header-menu" data-toggle="dropdown">{{ category.name }}<i class="fa fa-angle-down pull-right"></i>
+									</a>
+									<div class="dropdown-menu">
+										<div class="dropdown-inner">
+											{% for children in category.children|batch(category.children|length / category.column|round(1, 'ceil')) %}
+												<ul class="list-unstyled">
+													{% for child in children %}
+														<!--3rd level-->
+														<li class="dropdown-submenu">
+															<a href="{{ child.href }}" class="submenu-title">
+																{{ child.name }}
+															</a>
+															{% if child.grand_childs %}
+																<ul class="list-unstyled grand-child">
+																	{% for grand_child in child.grand_childs %}
+																		<li>
+																			<a href="{{ grand_child.href }}">
+																				{{grand_child.name}}
+																			</a>
+																		</li>
+																	{% endfor %}
+																</ul>
+															{% endif %}
+														</li>
+														<!--3rd level over-->
+													{% endfor %}
+												</ul>
+											{% endfor %}
+										</div>
+										<a href="{{ category.href }}" class="see-all">{{ text_all }}
+											{{ category.name }}</a>
+									</div>
+								</li>
+							{% else %}
+								<li>
+									<a href="{{ category.href }}">{{ category.name }}</a>
+								</li>
+							{% endif %}
+						{% endfor %}
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+	{% endif %}
+</div>
+
+<script >
+	function headermenu() {
+if (jQuery(window).width() < 992) {
+jQuery('ul.nav li.dropdown a.header-menu').attr("data-toggle", "dropdown");
+} else {
+jQuery('ul.nav li.dropdown a.header-menu').attr("data-toggle", "");
+}
+}
+$(document).ready(function () {
+headermenu();
+});
+jQuery(window).resize(function () {
+headermenu();
+});
+jQuery(window).scroll(function () {
+headermenu();
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+ #}

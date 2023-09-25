@@ -1,0 +1,80 @@
+<div class="container" id="partners">
+
+    <div class="row">
+         <h3 class="heading col-sm-12">
+            {{ heading_title }}
+         </h3>
+    </div>
+
+    <div class="row inner">
+
+        <div class="description col-sm-12 col-md-7">
+            {{ description }}
+
+            {% if partners_page %}
+                <a href="{{ partners_page.link }}" class="btn btn-primary">
+                    {{ text_buttonPartnersPage }}
+                </a>
+            {% endif %}
+
+        </div>
+
+        <div class="form col-sm-12 col-md-5">
+            <form action="{{ action }}" method="post" enctype="multipart/form-data" id="partnerRequestForm" class="form-horizontal">
+                <div class="form-group required">
+                    <label class="control-label" for="partners-company-name">{{ text_company_name }}</label>
+                    <input type="text" name="company_name" value="{{ company_name }}" placeholder="{{ text_company_name }}" id="partners-company-name" class="form-control" />
+                </div>
+
+                <div class="form-group required">
+                    <label class="control-label" for="partners-contact-person">{{ text_contact_person }}</label>
+                    <input type="text" name="contact_person" value="{{ contact_person }}" placeholder="{{ text_contact_person }}" id="partners-contact-person" class="form-control" />
+                </div>
+                <div class="form-group required">
+                    <label class="control-label" for="partners-phone">{{ text_phone }}</label>
+                    <input type="text" name="phone"  value="+38 (0" maxlength="19" placeholder="{{ text_phone }}" id="partners-phone" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="partners-email">{{ text_email }}</label>
+                    <input type="text" name="email" value="{{ email }}" placeholder="{{ text_email }}" id="partners-email" class="form-control" />
+                </div>
+                {# New #}
+                <div class="form-group required">
+                    <label class="control-label" for="partners-city">{{ text_city }}</label>
+                    <input type="text" name="city" value="{{ city }}" placeholder="{{ text_city }}" id="partners-city" class="form-control" />
+                </div>
+                <div class="form-group required">
+                    <label class="control-label" for="partners-cooperation_type">{{ text_cooperation_type }}</label>
+
+                    <select name="cooperation_type" id="partners-cooperation_type" class="form-control">
+                        <option value="Опт" selected>Опт</option>
+                        <option value="Дроп">Дроп</option>
+                        <option value="Роздріб">Роздріб</option>
+                    </select>
+
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="partners-trade_duration">{{ text_trade_duration }}</label>
+                    <input type="text" name="trade_duration" value="{{ trade_duration }}" placeholder="{{ text_trade_duration }}" id="partners-trade_duration" class="form-control" />
+                </div>
+                {# New #}
+                
+                <div class="buttons">
+                    <input class="btn btn-primary" type="submit" value="{{ text_submit }}">
+                </div>
+            </form>
+
+            <div class="success">
+                <svg width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M35 5.83334C18.9 5.83334 5.83337 18.9 5.83337 35C5.83337 51.1 18.9 64.1667 35 64.1667C51.1 64.1667 64.1667 51.1 64.1667 35C64.1667 18.9 51.1 5.83334 35 5.83334ZM35 58.3333C22.1375 58.3333 11.6667 47.8625 11.6667 35C11.6667 22.1375 22.1375 11.6667 35 11.6667C47.8625 11.6667 58.3334 22.1375 58.3334 35C58.3334 47.8625 47.8625 58.3333 35 58.3333ZM29.1667 41.3291L48.3875 22.1083L52.5 26.25L29.1667 49.5833L17.5 37.9166L21.6125 33.8041L29.1667 41.3291Z" fill="#1fc0a0" fill-opacity="1"></path>
+                </svg>
+                <div class="text">
+                    {{ success }}
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

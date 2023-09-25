@@ -1,0 +1,55 @@
+        <div class="cat-img container pro-nepr">
+            <h3 class="heading">{{ heading_title }}</h3>
+            <div class="category_module row">
+                <div id="category-name" class="owl-carousel owl-theme">
+                    {% for category in categories %}
+                        {% if category.category_id == category_id %}
+                            <div class="block-cat-wr col-xs-12 pl-5 pr-5">
+                                {% if category.image_name %}
+                                    <img src="{{ category.image_name }}" class="img-responsive center-block" alt="">
+                                {% else %}
+                                    <img src="image/no_image.png" class="img-responsive center-block cat-noimg" alt="">
+                                {% endif %}
+                                <h4 class="text-center"><a href="{{ category.href }}" class="">{{ category.name }}</a></h4>
+                            </div>
+                        {% else %}
+                            <div class="block-cat-wr col-xs-12 pl-5 pr-5">
+                                <div class="catb">
+                                    {% if category.image_name %}
+                                    <a href="{{ category.href }}">
+                                        <img src="{{ category.image_name }}" class="img-responsive center-block" alt="">
+                                    </a>
+                                    {% else %}
+                                     <a href="{{ category.href }}">
+                                        <img src="image/no_image.png" class="img-responsive center-block cat-noimg" alt="">
+                                    </a>
+                                    {% endif %}
+                                    <h4 class="text-center"><a href="{{ category.href }}" class="cate-name">{{ category.name }}</a></h4>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                 </div>
+            </div>          
+        </div>
+
+<script >
+    $(document).ready(function() {
+    $("#category-name").owlCarousel({
+    itemsCustom : [
+    [0, 1],
+    [320, 1],
+    [412, 2],
+    [600, 3],
+    [750, 2],
+    [768, 3],
+    [992, 4],
+    [1200, 4]
+    ],      
+      autoPlay:6000,
+      navigationText: ['<i class="fa fa-angle-left" aria-hidden="true"></i>', '<i class="fa fa-angle-right" aria-hidden="true"></i>'],
+      navigation : true,
+      pagination:false
+    });
+    });
+</script>
